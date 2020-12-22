@@ -83,6 +83,8 @@ const BASE_TEMPLATE_DATA = {
 
 function prepareEntityForTemplates(entityWithConfig, generator) {
     const entityName = entityWithConfig.name;
+    entityWithConfig.version = entityWithConfig.version || '1.0.0';
+
     _.defaults(entityWithConfig, entityDefaultConfig, BASE_TEMPLATE_DATA);
 
     entityWithConfig.changelogDateForRecent = parseLiquibaseChangelogDate(entityWithConfig.changelogDate);
