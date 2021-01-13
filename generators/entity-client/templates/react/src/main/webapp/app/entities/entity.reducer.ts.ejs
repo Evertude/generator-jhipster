@@ -192,9 +192,9 @@ export default (state: <%= entityReactName %>State = initialState, action): <%= 
   }
 };
 
-const apiUrl = '<% if (applicationType === 'gateway' && locals.microserviceName) { %>services/<%= microserviceName.toLowerCase() %>/<% } %>api/<%= entityApiUrl %>';
+const apiUrl = '<% if (applicationType === 'gateway' && locals.microserviceName) { %>services/<%= microserviceName.toLowerCase() %>/<% } %>api/<%= version %>/<%= entityApiUrl %>';
 <%_ if (searchEngine !== false) { _%>
-const apiSearchUrl = '<% if (applicationType === 'gateway' && locals.microserviceName) { %>services/<%= microserviceName.toLowerCase() %>/<% } %>api/_search/<%= entityApiUrl %>';
+const apiSearchUrl = '<% if (applicationType === 'gateway' && locals.microserviceName) { %>services/<%= microserviceName.toLowerCase() %>/<% } %>api/<%= version %>/_search/<%= entityApiUrl %>';
 <%_ } _%>
 
 // Actions
