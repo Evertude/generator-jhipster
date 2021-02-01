@@ -43,12 +43,12 @@ bootRun {
 }
 
 <%_ if (!skipClient) { _%>
-task webpack_test(type: <%= _.upperFirst(clientPackageManager) %>Task, dependsOn: "<%= clientPackageManager %><%_ if (clientPackageManager === 'npm') { _%>Install<%_ } _%>") {
-    args = ["run", "webpack:test"]
+task webapp_test(type: <%= _.upperFirst(clientPackageManager) %>Task, dependsOn: "<%= clientPackageManager %><%_ if (clientPackageManager === 'npm') { _%>Install<%_ } _%>") {
+    args = ["run", "webapp:test"]
 }
 
-task webpack(type: <%= _.upperFirst(clientPackageManager) %>Task, dependsOn: "<%= clientPackageManager %><%_ if (clientPackageManager === 'npm') { _%>Install<%_ } _%>") {
-    args = ["run", "webpack:prod"]
+task webapp(type: <%= _.upperFirst(clientPackageManager) %>Task, dependsOn: "<%= clientPackageManager %><%_ if (clientPackageManager === 'npm') { _%>Install<%_ } _%>") {
+    args = ["run", "webapp:prod"]
     environment = [APP_VERSION: project.version]
 }
 <%_ } _%>
@@ -59,24 +59,13 @@ processResources {
     filesMatching("**/application.yml") {
         filter {
             it.replace("#project.version#", version)
-        }
-        <%_ if (!serviceDiscoveryType) { _%>
-        filter {
-            it.replace("#spring.profiles.active#", profiles)
-        }
-        <%_ } _%>
-    }
-    <%_ if (serviceDiscoveryType === 'eureka' || serviceDiscoveryType === 'consul') { _%>
-    filesMatching("**/bootstrap.yml") {
-        filter {
             it.replace("#spring.profiles.active#", profiles)
         }
     }
-    <%_ } _%>
 }
 
 <%_ if (!skipClient) { _%>
-test.dependsOn webpack_test
-processResources.dependsOn webpack
+test.dependsOn webapp_test
+processResources.dependsOn webapp
 bootJar.dependsOn processResources
 <%_ } _%>

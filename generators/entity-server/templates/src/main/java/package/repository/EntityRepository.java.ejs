@@ -35,9 +35,7 @@ import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.mongodb.repository.MongoRepository;
 <%_ } _%>
 <%_ if (databaseType === 'neo4j') { _%>
-import org.neo4j.springframework.data.repository.Neo4jRepository;
-import org.neo4j.springframework.data.repository.query.Query;
-import java.util.List;
+import org.springframework.data.neo4j.repository.Neo4jRepository;
 <%_ } _%>
 <%_ if (searchEngine === 'couchbase') { _%>
 import <%= packageName %>.repository.search.SearchCouchbaseRepository;
@@ -89,20 +87,20 @@ public interface <%= entityClass %>Repository extends <% if (databaseType === 's
 
     @Query(value = "select distinct <%= entityInstance %> from <%= asEntity(entityClass) %> <%= entityInstance %><%
     for (const relationship of relationships) {
-        if (relationship.relationshipEagerLoad) { %> left join fetch <%= entityInstance %>.<%= relationship.relationshipFieldNamePlural %><% }
+        if (relationship.relationshipEagerLoad) { %> left join fetch <%= entityInstance %>.<%= relationship.reference.name %><% }
     } %>",
         countQuery = "select count(distinct <%= entityInstance %>) from <%= asEntity(entityClass) %> <%= entityInstance %>")
     Page<<%= asEntity(entityClass) %>> findAllWithEagerRelationships(Pageable pageable);
 
     @Query("select distinct <%= entityInstance %> from <%= asEntity(entityClass) %> <%= entityInstance %><%
     for (const relationship of relationships) {
-        if (relationship.relationshipEagerLoad) { %> left join fetch <%= entityInstance %>.<%= relationship.relationshipFieldNamePlural %><% }
+        if (relationship.relationshipEagerLoad) { %> left join fetch <%= entityInstance %>.<%= relationship.reference.name %><% }
     } %>")
     List<<%= asEntity(entityClass) %>> findAllWithEagerRelationships();
 
     @Query("select <%= entityInstance %> from <%= asEntity(entityClass) %> <%= entityInstance %><%
     for (const relationship of relationships) {
-        if (relationship.relationshipEagerLoad) { %> left join fetch <%= entityInstance %>.<%= relationship.relationshipFieldNamePlural %><% }
+        if (relationship.relationshipEagerLoad) { %> left join fetch <%= entityInstance %>.<%= relationship.reference.name %><% }
     } %> where <%= entityInstance %>.id =:id")
     Optional<<%= asEntity(entityClass) %>> findOneWithEagerRelationships(@Param("id") <%= primaryKey.type %> id);
     <%_

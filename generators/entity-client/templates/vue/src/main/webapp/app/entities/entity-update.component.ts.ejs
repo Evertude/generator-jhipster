@@ -70,6 +70,8 @@ import { DATE_TIME_LONG_FORMAT } from '@/shared/date/filters';
 _%>
   <% if (otherEntityAngularName === 'User' && authenticationType !== 'oauth2') { %>
 import UserService from '@/admin/user-management/user-management.service';
+  <% } else if (otherEntityAngularName === 'User' && authenticationType === 'oauth2') { %>
+import UserOAuth2Service from '@/entities/user/user.oauth2.service';
   <% } else if (otherEntityAngularName !== 'User') { %>
 import <%= otherEntityAngularName %>Service from '@/entities/<%= otherEntityClientRootFolder %><%= otherEntityFolderName %>/<%= otherEntityFileName %>.service';
 import { I<%= otherEntityAngularName %> } from '@/shared/model/<%= otherEntityModelName %>.model';
@@ -135,15 +137,18 @@ export default class <%= entityAngularName %>Update extends <% if (fieldsContain
         const otherEntityName = relationship.otherEntityName;
         const otherEntityNamePlural = relationship.otherEntityNamePlural;
         const otherEntityAngularName = relationship.otherEntityAngularName;
-        if (!(otherEntityAngularName === 'User' && authenticationType === "oauth2")) {
   _%>
   <%_ if (!entitiesSeen.includes(otherEntityAngularName)) { %>
+  <%_ if (otherEntityAngularName === 'User' && authenticationType === 'oauth2') { _%>
+  @Inject('userOAuth2Service') private userOAuth2Service: () => UserOAuth2Service;
+  <%_ } else {_%>
   @Inject('<%= otherEntityName %>Service') private <%= otherEntityName %>Service: () => <%= otherEntityAngularName %>Service;
+  <%_ } _%>
   <%_ } _%>
   <%_ if (!entitiesSeen.includes(otherEntityNamePlural)) { %>
   public <%= otherEntityNamePlural %> : <% if (otherEntityAngularName === 'User') { %>Array<any><%_ } else { _%>I<%= otherEntityAngularName %>[]<%_ } _%> = [];
   <%_ } _%>
-  <%_ entitiesSeen.push(otherEntityAngularName);entitiesSeen.push(otherEntityNamePlural); } } } _%>
+  <%_ entitiesSeen.push(otherEntityAngularName);entitiesSeen.push(otherEntityNamePlural); } } _%>
   public isSaving = false;
   public currentLanguage = '';
 
@@ -189,7 +194,7 @@ export default class <%= entityAngularName %>Update extends <% if (fieldsContain
         this.isSaving = false;
         this.$router.go(-1);
         <%_ if (enableTranslation) { _%>
-        const message = this.$t('<%= i18nKeyPrefix %>.updated', { 'param' : param.id });
+        const message = this.$t('<%= i18nAlertHeaderPrefix %>.updated', { 'param' : param.id });
         <%_ } else {_%>
         const message = 'A <%= entityAngularName %> is updated with identifier ' + param.id;
         <%_ } _%>
@@ -206,7 +211,7 @@ export default class <%= entityAngularName %>Update extends <% if (fieldsContain
         this.isSaving = false;
         this.$router.go(-1);
         <%_ if (enableTranslation) { _%>
-        const message = this.$t('<%= i18nKeyPrefix %>.created', { 'param' : param.id });
+          const message = this.$t('<%= i18nAlertHeaderPrefix %>.created', { 'param' : param.id });
         <%_ } else {_%>
         const message = 'A <%= entityAngularName %> is created with identifier ' + param.id;
         <%_ } _%>
@@ -295,10 +300,14 @@ _%>
           const otherEntityName = relationship.otherEntityName;
           const otherEntityNamePlural = relationship.otherEntityNamePlural;
           const otherEntityAngularName = relationship.otherEntityAngularName;
-          if (!(otherEntityAngularName === 'User' && authenticationType === "oauth2") && !entitiesSet.has(otherEntityName)) {
+          if (!entitiesSet.has(otherEntityName)) {
             entitiesSet.add(otherEntityName);
     _%>
+    <%_ if (otherEntityAngularName === 'User' && authenticationType === 'oauth2') { _%>
+    this.userOAuth2Service().retrieve().then((res) => {
+    <%_ } else {_%>
     this.<%= otherEntityName %>Service().retrieve().then((res) => {
+    <%_ } _%>
       this.<%= otherEntityNamePlural %> = res.data;
     });
     <%_ } } } _%>
